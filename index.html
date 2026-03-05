@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เกมบิงโกชนิดของคำ | ครูนนทพัทธ์ หิรัญเรือง</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root {
+    --p1: #6C2FC9;
+    --p2: #9B3FF5;
+    --p3: #C155E8;
+    --pk1: #E91E8C;
+    --pk2: #FF6BB5;
+    --pk3: #FFB3D9;
+    --gold: #FFD700;
+    --white: #FFFFFF;
+    --glass: rgba(255,255,255,0.12);
+    --glass-border: rgba(255,255,255,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Kanit', sans-serif;
+    min-height: 100vh;
+    background: #1a0535;
+    overflow-x: hidden;
+  }
+
+  .bg-layer {
+    position: fixed;
+    inset: 0;
+    background-image: url('https://nonthaphathr.github.io/uploadimg/bingobackground.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 0;
+  }
+
+  .bg-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(108,47,201,0.85) 0%, rgba(155,63,245,0.75) 30%, rgba(193,85,232,0.7) 60%, rgba(233,30,140,0.8) 100%);
+    z-index: 1;
+  }
+
+  .app {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    text-align: center;
+    padding: 24px 20px 16px;
+    position: relative;
+  }
+
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .logo-img {
+    height: 72px;
+    width: auto;
+    filter: drop-shadow(0 0 20px rgba(255,179,217,0.8));
+    animation: logoPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes logoPulse {
+    0%,100% { filter: drop-shadow(0 0 20px rgba(255,179,217,0.8)); transform: scale(1); }
+    50% { filter: drop-shadow(0 0 35px rgba(255,107,181,1)); transform: scale(1.05); }
+  }
+
+  .header-text h1 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #fff 0%, #FFD700 50%, #FF6BB5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    line-height: 1.2;
+    letter-spacing: 1px;
+  }
+
+  .header-text .subtitle {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
+    font-weight: 400;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ===== TABS ===== */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 20px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    font-family: 'Kanit', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 12px 32px;
+    border-radius: 50px;
+    border: 2px solid var(--glass-border);
+    background: var(--glass);
+    color: rgba(255,255,255,0.8);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    letter-spacing: 0.5px;
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--pk1), var(--p2));
+    border-color: var(--pk2);
+    color: white;
+    box-shadow: 0 8px 30px rgba(233,30,140,0.5);
+    transform: translateY(-2px);
+  }
+
+  .tab-btn:not(.active):hover {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  /* ===== SECTIONS ===== */
+  .section {
+    display: none;
+    padding: 0 20px 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .section.active { display: block; }
+
+  /* ===== GLASS CARD ===== */
+  .glass-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 24px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-title .icon {
+    font-size: 1.4rem;
+  }
+
+  /* ===== MODE SELECTOR ===== */
+  .mode-selector {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .mode-btn {
+    font-family: 'Kanit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 10px 24px;
+    border-radius: 50px;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .mode-btn.active {
+    background: linear-gradient(135deg, #FFD700, #FF9500);
+    border-color: #FFD700;
+    color: #1a0535;
+    box-shadow: 0 6px 20px rgba(255,215,0,0.4);
+    transform: scale(1.05);
+  }
+
+  .mode-btn:not(.active):hover {
+    background: rgba(255,255,255,0.2);
+    color: white;
+  }
+
+  /* ===== RANDOMIZER DISPLAY ===== */
+  .spin-area {
+    text-align: center;
+    padding: 20px 0;
+    position: relative;
+  }
+
+  .word-display-outer {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .word-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, var(--pk1), var(--p2), var(--gold));
+    animation: ringRotate 3s linear infinite;
+    opacity: 0.5;
+    filter: blur(4px);
+  }
+
+  @keyframes ringRotate {
+    0% { transform: rotate(0deg); opacity: 0.3; }
+    50% { opacity: 0.7; }
+    100% { transform: rotate(360deg); opacity: 0.3; }
+  }
+
+  .word-display {
+    position: relative;
+    background: rgba(0,0,0,0.4);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 24px;
+    padding: 40px 30px;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  .word-display::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(108,47,201,0.3), rgba(233,30,140,0.3));
+    border-radius: 22px;
+  }
+
+  .word-type-badge {
+    position: relative;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--pk1), var(--p2));
+    color: white;
+    letter-spacing: 1px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .word-type-badge.show { opacity: 1; }
+
+  .current-word {
+    position: relative;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 0 30px rgba(255,107,181,0.8), 0 4px 15px rgba(0,0,0,0.5);
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s;
+    letter-spacing: 2px;
+  }
+
+  .word-counter-badge {
+    position: relative;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+    font-weight: 400;
+  }
+
+  /* Particles */
+  .particles-wrap {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: 22px;
+  }
+
+  .particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: particleFly 1s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes particleFly {
+    0% { opacity: 1; transform: translate(0,0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+  }
+
+  /* Spin button */
+  .spin-btn {
+    font-family: 'Kanit', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    padding: 18px 60px;
+    border-radius: 60px;
+    border: none;
+    background: linear-gradient(135deg, var(--pk1) 0%, #C71585 50%, var(--p1) 100%);
+    color: white;
+    cursor: pointer;
+    margin-top: 24px;
+    box-shadow: 0 10px 40px rgba(233,30,140,0.6), 0 0 0 0 rgba(233,30,140,0.4);
+    transition: all 0.3s ease;
+    animation: btnPulse 2.5s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 1px;
+  }
+
+  .spin-btn::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 60px;
+    background: linear-gradient(135deg, var(--gold), var(--pk2), var(--p2));
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .spin-btn:hover::after { opacity: 1; }
+
+  .spin-btn:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 18px 50px rgba(233,30,140,0.7);
+  }
+
+  .spin-btn:active { transform: scale(0.97); }
+
+  .spin-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    animation: none;
+    transform: none;
+  }
+
+  @keyframes btnPulse {
+    0%,100% { box-shadow: 0 10px 40px rgba(233,30,140,0.6), 0 0 0 0 rgba(233,30,140,0.4); }
+    50% { box-shadow: 0 10px 40px rgba(233,30,140,0.6), 0 0 0 12px rgba(233,30,140,0); }
+  }
+
+  .shake {
+    animation: wordShake 0.06s ease-in-out;
+  }
+
+  @keyframes wordShake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-5px) scale(1.05); }
+    75% { transform: translateX(5px) scale(1.05); }
+  }
+
+  .word-reveal {
+    animation: wordReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes wordReveal {
+    0% { transform: scale(0.5) rotate(-5deg); opacity: 0; }
+    60% { transform: scale(1.2) rotate(2deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  /* ===== HISTORY ===== */
+  .history-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 4px;
+  }
+
+  .history-grid::-webkit-scrollbar { width: 4px; }
+  .history-grid::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+  .history-grid::-webkit-scrollbar-thumb { background: var(--pk2); border-radius: 4px; }
+
+  .history-item {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(5px);
+  }
+
+  .history-item.noun {
+    background: linear-gradient(135deg, rgba(108,47,201,0.6), rgba(155,63,245,0.4));
+    color: #dbb4ff;
+  }
+
+  .history-item.verb {
+    background: linear-gradient(135deg, rgba(233,30,140,0.6), rgba(255,107,181,0.4));
+    color: #ffb3d9;
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .clear-btn {
+    font-family: 'Kanit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    cursor: pointer;
+    transition: all 0.2s;
+    float: right;
+    margin-bottom: 10px;
+  }
+
+  .clear-btn:hover {
+    background: rgba(233,30,140,0.4);
+    border-color: var(--pk2);
+    color: white;
+  }
+
+  /* ===== STATS ===== */
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .stat-box {
+    flex: 1;
+    min-width: 100px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--gold), var(--pk2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 4px;
+  }
+
+  /* ===== BINGO CARD SECTION ===== */
+  .card-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .select-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .select-label {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+  }
+
+  .styled-select {
+    font-family: 'Kanit', sans-serif;
+    font-size: 0.95rem;
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(0,0,0,0.3);
+    color: white;
+    cursor: pointer;
+    outline: none;
+    backdrop-filter: blur(10px);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23fff' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+
+  .styled-select option { background: #2a0a4a; color: white; }
+
+  .styled-select:focus {
+    border-color: var(--pk2);
+    box-shadow: 0 0 0 2px rgba(255,107,181,0.3);
+  }
+
+  .gen-btn {
+    font-family: 'Kanit', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: 16px;
+    border: none;
+    background: linear-gradient(135deg, var(--p2), var(--pk1));
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 6px 20px rgba(155,63,245,0.5);
+    white-space: nowrap;
+    align-self: flex-end;
+  }
+
+  .gen-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(155,63,245,0.6);
+  }
+
+  .print-btn {
+    font-family: 'Kanit', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: 16px;
+    border: 2px solid var(--gold);
+    background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,149,0,0.2));
+    color: var(--gold);
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+    align-self: flex-end;
+  }
+
+  .print-btn:hover {
+    background: linear-gradient(135deg, rgba(255,215,0,0.4), rgba(255,149,0,0.4));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255,215,0,0.3);
+  }
+
+  /* ===== PREVIEW GRID ===== */
+  .preview-scroll {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 4px;
+  }
+
+  .preview-scroll::-webkit-scrollbar { width: 6px; }
+  .preview-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 6px; }
+  .preview-scroll::-webkit-scrollbar-thumb { background: var(--p2); border-radius: 6px; }
+
+  .bingo-card-preview {
+    background: white;
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    transition: transform 0.2s;
+    cursor: pointer;
+    border: 3px solid transparent;
+  }
+
+  .bingo-card-preview:hover {
+    transform: translateY(-4px);
+    border-color: var(--pk2);
+    box-shadow: 0 15px 40px rgba(233,30,140,0.4);
+  }
+
+  .card-header-preview {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .card-num {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #888;
+    letter-spacing: 1px;
+  }
+
+  .card-title-preview {
+    font-size: 0.95rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #6C2FC9, #E91E8C);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.5px;
+  }
+
+  .bingo-grid-preview {
+    display: grid;
+    gap: 3px;
+    width: 100%;
+  }
+
+  .bingo-cell-preview {
+    background: linear-gradient(135deg, #f8f0ff, #fff0f8);
+    border: 1.5px solid #e0c4f8;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    color: #4a1570;
+    text-align: center;
+    padding: 4px 2px;
+    line-height: 1.2;
+  }
+
+  .bingo-cell-preview.free {
+    background: linear-gradient(135deg, #C155E8, #E91E8C);
+    color: white;
+    border-color: transparent;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  .no-cards-msg {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255,255,255,0.5);
+    font-size: 1.1rem;
+    grid-column: 1 / -1;
+  }
+
+  .no-cards-msg .big-icon { font-size: 4rem; display: block; margin-bottom: 12px; }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-wrap {
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    height: 8px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pk1), var(--gold));
+    border-radius: 10px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  .progress-text {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 4px;
+    text-align: center;
+  }
+
+  /* ===== SOUND TOGGLE ===== */
+  .sound-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    color: white;
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+  }
+
+  .sound-toggle:hover {
+    background: rgba(255,255,255,0.25);
+    transform: scale(1.1);
+  }
+
+  /* ===== CONFETTI ===== */
+  .confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    pointer-events: none;
+    z-index: 999;
+    animation: confettiFall linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ===== GLOW EFFECT ON REVEAL ===== */
+  .glow-reveal {
+    animation: glowReveal 0.8s ease-out forwards;
+  }
+
+  @keyframes glowReveal {
+    0% { text-shadow: 0 0 30px rgba(255,107,181,0.8), 0 4px 15px rgba(0,0,0,0.5); }
+    50% { text-shadow: 0 0 60px rgba(255,215,0,1), 0 0 120px rgba(255,107,181,0.8), 0 4px 15px rgba(0,0,0,0.5); }
+    100% { text-shadow: 0 0 30px rgba(255,107,181,0.8), 0 4px 15px rgba(0,0,0,0.5); }
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .header-text h1 { font-size: 1.6rem; }
+    .current-word { font-size: 2.5rem; }
+    .spin-btn { padding: 14px 40px; font-size: 1.2rem; }
+    .glass-card { padding: 18px; }
+    .preview-scroll { grid-template-columns: 1fr; }
+  }
+
+  /* ===== COUNT BADGE ===== */
+  .count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--pk1), var(--p2));
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-left: 8px;
+  }
+
+  .cards-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  /* ===== PDF BUTTON ===== */
+  .pdf-btn {
+    font-family: 'Kanit', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: 16px;
+    border: 2px solid #4CAF50;
+    background: linear-gradient(135deg, rgba(76,175,80,0.2), rgba(0,200,83,0.2));
+    color: #81C784;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+    align-self: flex-end;
+  }
+
+  .pdf-btn:hover {
+    background: linear-gradient(135deg, rgba(76,175,80,0.4), rgba(0,200,83,0.4));
+    color: #C8E6C9;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(76,175,80,0.35);
+  }
+
+  .pdf-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ===== PDF LOADING OVERLAY ===== */
+  .pdf-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(10, 2, 30, 0.88);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .pdf-overlay.show {
+    display: flex;
+  }
+
+  .pdf-spinner {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 5px solid rgba(255,255,255,0.1);
+    border-top-color: var(--pk2);
+    border-right-color: var(--gold);
+    animation: pdfSpin 0.9s linear infinite;
+  }
+
+  @keyframes pdfSpin {
+    to { transform: rotate(360deg); }
+  }
+
+  .pdf-overlay-text {
+    text-align: center;
+  }
+
+  .pdf-overlay-text h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+  }
+
+  .pdf-overlay-text p {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .pdf-progress-wrap {
+    width: 260px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    height: 10px;
+    overflow: hidden;
+  }
+
+  .pdf-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pk1), var(--gold));
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .pdf-page-count {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* ===== HIDDEN RENDER AREA ===== */
+  #pdfRenderArea {
+    position: fixed;
+    left: -9999px;
+    top: 0;
+    width: 794px; /* A4 at 96dpi */
+    background: white;
+    z-index: -1;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="bg-overlay"></div>
+
+<button class="sound-toggle" id="soundToggle" title="เปิด/ปิดเสียง">🔊</button>
+
+<div class="app">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-wrap">
+      <img src="https://nonthaphathr.github.io/uploadimg/logobingo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+      <div class="header-text">
+        <h1>เกมบิงโกชนิดของคำ</h1>
+        <div class="subtitle">พัฒนาโดย ครูนนทพัทธ์ หิรัญเรือง</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('randomizer')">🎲 สุ่มคำ</button>
+    <button class="tab-btn" onclick="switchTab('cards')">🖨️ บิงโกการ์ด</button>
+  </div>
+
+  <!-- ===== SECTION: RANDOMIZER ===== -->
+  <div class="section active" id="section-randomizer">
+
+    <!-- Mode Selector -->
+    <div class="glass-card">
+      <div class="card-title"><span class="icon">🎯</span> เลือกโหมดการเล่น</div>
+      <div class="mode-selector">
+        <button class="mode-btn active" onclick="setMode('noun', this)">📦 คำนาม</button>
+        <button class="mode-btn" onclick="setMode('verb', this)">⚡ คำกริยา</button>
+        <button class="mode-btn" onclick="setMode('both', this)">🌟 รวมทั้ง 2 ชนิด</button>
+      </div>
+    </div>
+
+    <!-- Spin Area -->
+    <div class="glass-card">
+      <div class="card-title"><span class="icon">✨</span> สุ่มคำ</div>
+      <div class="spin-area">
+        <div class="word-display-outer">
+          <div class="word-ring"></div>
+          <div class="word-display" id="wordDisplay">
+            <div class="particles-wrap" id="particlesWrap"></div>
+            <div class="word-type-badge" id="wordTypeBadge">คำนาม</div>
+            <div class="current-word" id="currentWord">กดสุ่มคำ!</div>
+            <div class="word-counter-badge" id="wordCounter">คำที่เหลือ: <span id="remainingCount">50</span> คำ</div>
+          </div>
+        </div>
+        <div style="margin-top: 16px;">
+          <div class="progress-wrap">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+          <div class="progress-text" id="progressText">ยังไม่ได้สุ่ม</div>
+        </div>
+        <button class="spin-btn" id="spinBtn" onclick="spinWord()">🎲 สุ่มคำ!</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="glass-card">
+      <div class="card-title"><span class="icon">📊</span> สถิติการสุ่ม</div>
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-num" id="statTotal">0</div>
+          <div class="stat-label">คำที่สุ่มแล้ว</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="statNoun">0</div>
+          <div class="stat-label">คำนาม</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="statVerb">0</div>
+          <div class="stat-label">คำกริยา</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="statRemain">50</div>
+          <div class="stat-label">คำที่เหลือ</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="glass-card">
+      <div class="card-title" style="justify-content: space-between;">
+        <span><span class="icon">📜</span> ประวัติคำที่สุ่มแล้ว</span>
+        <button class="clear-btn" onclick="clearHistory()">🗑️ รีเซ็ต</button>
+      </div>
+      <div class="history-grid" id="historyGrid">
+        <div style="color:rgba(255,255,255,0.4); font-size:0.9rem; padding: 10px;">ยังไม่มีประวัติ...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION: BINGO CARDS ===== -->
+  <div class="section" id="section-cards">
+
+    <!-- Controls -->
+    <div class="glass-card">
+      <div class="card-title"><span class="icon">⚙️</span> ตั้งค่าการ์ดบิงโก</div>
+      <div class="card-controls">
+        <div class="select-wrap">
+          <label class="select-label">ขนาดตาราง</label>
+          <select class="styled-select" id="gridSize">
+            <option value="3">3 × 3</option>
+            <option value="4">4 × 4</option>
+            <option value="5" selected>5 × 5</option>
+            <option value="6">6 × 6</option>
+          </select>
+        </div>
+        <div class="select-wrap">
+          <label class="select-label">ชนิดคำ</label>
+          <select class="styled-select" id="cardMode">
+            <option value="noun">📦 คำนาม</option>
+            <option value="verb">⚡ คำกริยา</option>
+            <option value="both" selected>🌟 รวมทั้ง 2 ชนิด</option>
+          </select>
+        </div>
+        <div class="select-wrap">
+          <label class="select-label">จำนวนการ์ด</label>
+          <select class="styled-select" id="cardCount">
+            <option value="5">5 การ์ด</option>
+            <option value="10">10 การ์ด</option>
+            <option value="20">20 การ์ด</option>
+            <option value="30" selected>30 การ์ด</option>
+          </select>
+        </div>
+        <div class="select-wrap">
+          <label class="select-label">ช่อง FREE</label>
+          <select class="styled-select" id="freeCell">
+            <option value="yes">✅ มีช่อง FREE</option>
+            <option value="no">❌ ไม่มีช่อง FREE</option>
+          </select>
+        </div>
+        <button class="gen-btn" onclick="generateCards()">✨ สร้างการ์ด</button>
+        <button class="print-btn" id="printBtn" onclick="printCards()" style="display:none">🖨️ พิมพ์</button>
+        <button class="pdf-btn" id="pdfBtn" onclick="downloadPDF()" style="display:none">⬇️ ดาวน์โหลด PDF</button>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="glass-card">
+      <div class="cards-section-header">
+        <div class="card-title" style="margin-bottom:0">
+          <span class="icon">🃏</span> พรีวิวการ์ด
+          <span class="count-badge" id="cardCountBadge">0</span>
+        </div>
+      </div>
+      <div class="preview-scroll" id="cardsPreview">
+        <div class="no-cards-msg">
+          <span class="big-icon">🎴</span>
+          กดปุ่ม "สร้างการ์ด" เพื่อสร้างบิงโกการ์ด
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PDF Loading Overlay -->
+<div class="pdf-overlay" id="pdfOverlay">
+  <div class="pdf-spinner"></div>
+  <div class="pdf-overlay-text">
+    <h3>📄 กำลังสร้าง PDF...</h3>
+    <p id="pdfOverlayMsg">กรุณารอสักครู่</p>
+  </div>
+  <div class="pdf-progress-wrap">
+    <div class="pdf-progress-fill" id="pdfProgressFill"></div>
+  </div>
+  <div class="pdf-page-count" id="pdfPageCount"></div>
+</div>
+
+<!-- Hidden area for rendering cards to canvas -->
+<div id="pdfRenderArea"></div>
+
+<script>
+// ===== DATA =====
+const NOUNS = ['แมว','สุนัข','บ้าน','รถยนต์','โรงเรียน','ทะเล','ภูเขา','ดอกไม้','ต้นไม้','หนังสือ','ปากกา','โทรศัพท์','คอมพิวเตอร์','เสื้อผ้า','รองเท้า','อาหาร','น้ำ','ผลไม้','ท้องฟ้า','พระอาทิตย์','พระจันทร์','ดวงดาว','กระเป๋า','นาฬิกา','แว่นตา','เก้าอี้','โต๊ะ','เตียงนอน','หน้าต่าง','ประตู','พัดลม','ตู้เย็น','ช้อน','ส้อม','จาน','แก้วน้ำ','ร่ม','ตลาด','โรงพยาบาล','สวนสาธารณะ','เครื่องบิน','รถไฟ','จักรยาน','เงิน','เพลง','หนัง','เพื่อน','ครอบครัว','เด็ก','ครู'];
+const VERBS  = ['กิน','นอน','เดิน','วิ่ง','นั่ง','ยืน','พูด','ฟัง','ดู','อ่าน','เขียน','เรียน','ทำงาน','เล่น','หัวเราะ','ร้องไห้','กระโดด','ว่ายน้ำ','ขี่','ขับ','ซื้อ','ขาย','ให้','รับ','รัก','เกลียด','โกรธ','กลัว','คิด','จำ','ลืม','รู้จัก','เข้าใจ','ตื่น','อาบน้ำ','แต่งตัว','แปรงฟัน','กวาด','ถู','ล้าง','ปรุง','เต้น','ร้องเพลง','เที่ยว','พักผ่อน','ช่วยเหลือ','แบ่งปัน','รอ','พบ','ลา'];
+
+// ===== STATE =====
+let currentMode = 'noun';
+let drawnWords = [];
+let remainPool = [];
+let soundEnabled = true;
+let isSpinning = false;
+let generatedCards = [];
+
+// Audio Context
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playSound(type) {
+  if (!soundEnabled) return;
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if (type === 'spin') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(200, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.1);
+    } else if (type === 'tick') {
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(400 + Math.random() * 400, ctx.currentTime);
+      gain.gain.setValueAtTime(0.05, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.04);
+    } else if (type === 'reveal') {
+      // Fanfare
+      const notes = [523, 659, 784, 1047];
+      notes.forEach((freq, i) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type = 'triangle';
+        o.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.08);
+        g.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.08);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.08 + 0.2);
+        o.start(ctx.currentTime + i * 0.08);
+        o.stop(ctx.currentTime + i * 0.08 + 0.2);
+      });
+    } else if (type === 'done') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(300, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.4);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+    }
+  } catch(e) {}
+}
+
+// ===== POOL MANAGEMENT =====
+function getPool() {
+  if (currentMode === 'noun') return [...NOUNS];
+  if (currentMode === 'verb') return [...VERBS];
+  return [...NOUNS, ...VERBS];
+}
+
+function resetPool() {
+  remainPool = getPool().filter(w => !drawnWords.map(d => d.word).includes(w));
+  updateStats();
+}
+
+function setMode(mode, btn) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  resetPool();
+  updateProgress();
+}
+
+// ===== SPIN =====
+async function spinWord() {
+  if (isSpinning) return;
+
+  if (remainPool.length === 0) {
+    const wordEl = document.getElementById('currentWord');
+    wordEl.textContent = 'หมดคำแล้ว!';
+    wordEl.style.fontSize = '2rem';
+    playSound('done');
+    const btn = document.getElementById('spinBtn');
+    btn.textContent = '🔄 รีเซ็ตและเล่นใหม่';
+    btn.onclick = () => {
+      drawnWords = []; resetPool();
+      document.getElementById('historyGrid').innerHTML = '<div style="color:rgba(255,255,255,0.4); font-size:0.9rem; padding:10px;">ยังไม่มีประวัติ...</div>';
+      updateStats(); updateProgress();
+      wordEl.textContent = 'กดสุ่มคำ!'; wordEl.style.fontSize = '3.5rem';
+      btn.textContent = '🎲 สุ่มคำ!'; btn.onclick = spinWord;
+    };
+    return;
+  }
+
+  isSpinning = true;
+  const btn = document.getElementById('spinBtn');
+  btn.disabled = true;
+  const wordEl = document.getElementById('currentWord');
+  const badge = document.getElementById('wordTypeBadge');
+
+  // Spin animation
+  playSound('spin');
+  const totalTicks = 20 + Math.floor(Math.random() * 15);
+  const allWords = getPool();
+
+  for (let i = 0; i < totalTicks; i++) {
+    const randomWord = allWords[Math.floor(Math.random() * allWords.length)];
+    wordEl.textContent = randomWord;
+    wordEl.classList.add('shake');
+    setTimeout(() => wordEl.classList.remove('shake'), 60);
+    if (i % 3 === 0) playSound('tick');
+    const delay = 40 + (i / totalTicks) * 120;
+    await sleep(delay);
+  }
+
+  // Pick real word
+  const idx = Math.floor(Math.random() * remainPool.length);
+  const chosen = remainPool.splice(idx, 1)[0];
+  const isNoun = NOUNS.includes(chosen);
+  const wordType = isNoun ? 'คำนาม' : 'คำกริยา';
+
+  // Reveal
+  wordEl.textContent = chosen;
+  wordEl.classList.add('word-reveal', 'glow-reveal');
+  setTimeout(() => { wordEl.classList.remove('word-reveal', 'glow-reveal'); }, 800);
+
+  badge.textContent = wordType;
+  badge.classList.add('show');
+  badge.style.background = isNoun
+    ? 'linear-gradient(135deg, #6C2FC9, #9B3FF5)'
+    : 'linear-gradient(135deg, #E91E8C, #FF6BB5)';
+
+  playSound('reveal');
+  spawnParticles();
+  spawnConfetti(12);
+
+  drawnWords.push({ word: chosen, type: isNoun ? 'noun' : 'verb' });
+  addToHistory(chosen, isNoun ? 'noun' : 'verb');
+  updateStats();
+  updateProgress();
+  wordEl.style.fontSize = '3.5rem';
+
+  await sleep(400);
+  isSpinning = false;
+  btn.disabled = false;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ===== PARTICLES =====
+function spawnParticles() {
+  const wrap = document.getElementById('particlesWrap');
+  wrap.innerHTML = '';
+  const colors = ['#FFD700','#FF6BB5','#C155E8','#FF9500','#fff'];
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = '50%';
+    p.style.top = '50%';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    const angle = Math.random() * 360;
+    const dist = 60 + Math.random() * 100;
+    p.style.setProperty('--tx', Math.cos(angle * Math.PI/180) * dist + 'px');
+    p.style.setProperty('--ty', Math.sin(angle * Math.PI/180) * dist + 'px');
+    p.style.animationDuration = (0.6 + Math.random() * 0.6) + 's';
+    p.style.animationDelay = Math.random() * 0.2 + 's';
+    wrap.appendChild(p);
+  }
+}
+
+function spawnConfetti(count) {
+  const colors = ['#FFD700','#FF6BB5','#C155E8','#FF9500','#fff','#6CF','#6FC'];
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.left = (20 + Math.random() * 60) + 'vw';
+    c.style.top = '-20px';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    c.style.width = (6 + Math.random() * 8) + 'px';
+    c.style.height = (6 + Math.random() * 8) + 'px';
+    c.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+    c.style.animationDelay = Math.random() * 0.5 + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+// ===== HISTORY =====
+function addToHistory(word, type) {
+  const grid = document.getElementById('historyGrid');
+  const empties = grid.querySelectorAll('div:not(.history-item)');
+  empties.forEach(e => e.remove());
+
+  const item = document.createElement('div');
+  item.className = `history-item ${type}`;
+  item.textContent = word;
+  grid.insertBefore(item, grid.firstChild);
+}
+
+function clearHistory() {
+  drawnWords = [];
+  resetPool();
+  document.getElementById('historyGrid').innerHTML = '<div style="color:rgba(255,255,255,0.4); font-size:0.9rem; padding:10px;">ยังไม่มีประวัติ...</div>';
+  document.getElementById('currentWord').textContent = 'กดสุ่มคำ!';
+  document.getElementById('wordTypeBadge').classList.remove('show');
+  const btn = document.getElementById('spinBtn');
+  btn.textContent = '🎲 สุ่มคำ!';
+  btn.onclick = spinWord;
+  btn.disabled = false;
+  updateStats();
+  updateProgress();
+}
+
+// ===== STATS =====
+function updateStats() {
+  const total = drawnWords.length;
+  const nouns = drawnWords.filter(d => d.type === 'noun').length;
+  const verbs = drawnWords.filter(d => d.type === 'verb').length;
+  const remain = remainPool.length;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statNoun').textContent = nouns;
+  document.getElementById('statVerb').textContent = verbs;
+  document.getElementById('statRemain').textContent = remain;
+  document.getElementById('remainingCount').textContent = remain;
+}
+
+function updateProgress() {
+  const pool = getPool();
+  const total = pool.length;
+  const drawn = drawnWords.filter(d => pool.includes(d.word)).length;
+  const pct = total ? (drawn / total * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = drawn === 0
+    ? 'ยังไม่ได้สุ่ม'
+    : `สุ่มไปแล้ว ${drawn}/${total} คำ (${Math.round(pct)}%)`;
+}
+
+// ===== TABS =====
+function switchTab(tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + tab).classList.add('active');
+  document.querySelectorAll('.tab-btn')[tab === 'randomizer' ? 0 : 1].classList.add('active');
+}
+
+// ===== SOUND TOGGLE =====
+document.getElementById('soundToggle').onclick = function() {
+  soundEnabled = !soundEnabled;
+  this.textContent = soundEnabled ? '🔊' : '🔇';
+};
+
+// ===== BINGO CARD GENERATOR =====
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getWordPool(mode) {
+  if (mode === 'noun') return [...NOUNS];
+  if (mode === 'verb') return [...VERBS];
+  return [...NOUNS, ...VERBS];
+}
+
+function generateCards() {
+  const size = parseInt(document.getElementById('gridSize').value);
+  const mode = document.getElementById('cardMode').value;
+  const count = parseInt(document.getElementById('cardCount').value);
+  const hasFree = document.getElementById('freeCell').value === 'yes';
+
+  const pool = getWordPool(mode);
+  const needed = size * size - (hasFree && size % 2 === 1 ? 1 : 0);
+
+  if (pool.length < needed) {
+    alert(`คำในโหมดนี้ไม่เพียงพอสำหรับการ์ด ${size}×${size}\nต้องการ ${needed} คำ มีแค่ ${pool.length} คำ\nกรุณาเลือก "รวมทั้ง 2 ชนิด"`);
+    return;
+  }
+
+  generatedCards = [];
+  for (let c = 0; c < count; c++) {
+    const words = shuffle(pool).slice(0, needed);
+    generatedCards.push({ id: c + 1, size, words, hasFree, mode });
+  }
+
+  renderPreviews(generatedCards);
+  document.getElementById('cardCountBadge').textContent = count;
+  document.getElementById('printBtn').style.display = '';
+  document.getElementById('pdfBtn').style.display = '';
+}
+
+function renderPreviews(cards) {
+  const container = document.getElementById('cardsPreview');
+  container.innerHTML = '';
+
+  cards.forEach(card => {
+    const div = document.createElement('div');
+    div.className = 'bingo-card-preview';
+    div.onclick = () => printSingleCard(card);
+
+    const size = card.size;
+    const cellSize = Math.floor(220 / size);
+    const fontSize = Math.max(9, Math.floor(cellSize * 0.28));
+    const totalCells = size * size;
+    const freeIdx = card.hasFree && size % 2 === 1 ? Math.floor(totalCells / 2) : -1;
+
+    const modeLabel = {noun:'📦 คำนาม', verb:'⚡ คำกริยา', both:'🌟 รวมทั้ง 2 ชนิด'}[card.mode];
+
+    let cells = [];
+    let wordIdx = 0;
+    for (let i = 0; i < totalCells; i++) {
+      if (i === freeIdx) {
+        cells.push({ text: 'FREE', isFree: true });
+      } else {
+        cells.push({ text: card.words[wordIdx++] || '', isFree: false });
+      }
+    }
+
+    div.innerHTML = `
+      <div class="card-header-preview">
+        <div class="card-num">การ์ดที่ ${card.id} | ${modeLabel} | ตาราง ${size}×${size}</div>
+        <div class="card-title-preview">🎯 บิงโกชนิดของคำ</div>
+      </div>
+      <div class="bingo-grid-preview" style="grid-template-columns: repeat(${size}, 1fr);">
+        ${cells.map(cell => `
+          <div class="bingo-cell-preview ${cell.isFree ? 'free' : ''}" style="font-size:${fontSize}px; height:${cellSize}px;">
+            ${cell.text}
+          </div>
+        `).join('')}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// ===== PRINT ALL =====
+function printCards() {
+  if (!generatedCards.length) { alert('กรุณาสร้างการ์ดก่อน'); return; }
+  openPrintWindow(generatedCards);
+}
+
+// ===== PRINT SINGLE =====
+function printSingleCard(card) {
+  openPrintWindow([card]);
+}
+
+function openPrintWindow(cards) {
+  const cardsHtml = cards.map(card => buildPrintCard(card)).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>บิงโกการ์ด - ครูนนทพัทธ์</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Kanit',sans-serif; background:#f5f0ff; }
+  .page {
+    width: 210mm; min-height: 297mm;
+    background: white;
+    margin: 0 auto 20px;
+    padding: 12mm 12mm 15mm;
+    display: flex; flex-direction: column; gap: 8mm;
+    page-break-after: always;
+    position: relative;
+  }
+  .bingo-card {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center;
+    border: 3px solid #6C2FC9;
+    border-radius: 14px;
+    padding: 10px 14px 14px;
+    background: linear-gradient(135deg, #f8f0ff, #fff0f8);
+    box-shadow: 0 4px 20px rgba(108,47,201,0.15);
+    page-break-inside: avoid;
+    gap: 8px;
+  }
+  .card-top { width:100%; display:flex; align-items:center; justify-content:center; gap:10px; }
+  .card-logo { height:45px; width:auto; }
+  .card-heading { text-align:center; }
+  .card-heading h2 {
+    font-size:16pt; font-weight:900; line-height:1.1;
+    background: linear-gradient(135deg, #6C2FC9, #E91E8C);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .card-heading .sub { font-size:8pt; color:#888; font-weight:400; }
+  .card-meta {
+    display:flex; gap:12px; align-items:center; justify-content:center;
+    font-size:8.5pt; color:#6C2FC9; font-weight:600;
+    border-top: 1px dashed #e0c4f8; border-bottom: 1px dashed #e0c4f8;
+    padding: 4px 0; width:100%;
+  }
+  .bingo-table { border-collapse:collapse; width:100%; }
+  .bingo-table td {
+    border: 2px solid #C155E8;
+    text-align:center; vertical-align:middle;
+    font-family:'Kanit',sans-serif;
+    font-weight:600; color:#3a0a6a;
+    padding: 3px;
+    line-height:1.25;
+  }
+  .bingo-table td.free {
+    background: linear-gradient(135deg, #9B3FF5, #E91E8C);
+    color: white; font-weight:900; font-size:11pt;
+    letter-spacing:1px; border-color:#6C2FC9;
+  }
+  .bingo-table td.header-cell {
+    background: linear-gradient(135deg, #6C2FC9, #9B3FF5);
+    color: white; font-weight:800; letter-spacing:2px;
+    font-size:11pt; border-color:#4a0a9a;
+  }
+  .card-footer {
+    font-size:7.5pt; color:#aaa; font-weight:400;
+    border-top:1px solid #f0e0ff; padding-top:6px; text-align:center;
+  }
+  .card-num-stamp {
+    position:absolute; top:6px; right:10px;
+    font-size:8pt; font-weight:700; color:#C155E8; opacity:0.7;
+  }
+  @media print {
+    body { background: white; }
+    .page { margin:0; box-shadow:none; page-break-after: always; }
+    @page { size: A4; margin: 0; }
+  }
+</style>
+</head>
+<body>
+${cardsHtml}
+<script>
+  // Auto print after fonts load
+  document.fonts.ready.then(() => { setTimeout(() => window.print(), 400); });
+<\/script>
+</body></html>`;
+
+  // Use Blob URL — works without popup permission
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  // Try open in new tab; if blocked, fallback to iframe print
+  const win = window.open(url, '_blank');
+  if (!win) {
+    // Fallback: hidden iframe
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:210mm;height:297mm;border:none;';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    iframe.onload = () => {
+      setTimeout(() => {
+        iframe.contentWindow.print();
+        setTimeout(() => { document.body.removeChild(iframe); URL.revokeObjectURL(url); }, 2000);
+      }, 800);
+    };
+  } else {
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  }
+}
+
+function buildPrintCard(card) {
+  const size = card.size;
+  const hasFree = card.hasFree && size % 2 === 1;
+  const totalCells = size * size;
+  const freeIdx = hasFree ? Math.floor(totalCells / 2) : -1;
+  const modeLabel = {noun:'คำนาม', verb:'คำกริยา', both:'รวมทั้ง 2 ชนิด'}[card.mode];
+
+  // Determine cell height based on size
+  const rowH = { 3:44, 4:34, 5:29, 6:25 }[size] || 29;
+  const fontSize = { 3:14, 4:12, 5:11, 6:9 }[size] || 11;
+
+  let cells = [];
+  let wordIdx = 0;
+  for (let i = 0; i < totalCells; i++) {
+    if (i === freeIdx) {
+      cells.push({ text: 'FREE', isFree: true });
+    } else {
+      cells.push({ text: card.words[wordIdx++] || '', isFree: false });
+    }
+  }
+
+  let rows = '';
+  for (let r = 0; r < size; r++) {
+    let row = '<tr>';
+    for (let c = 0; c < size; c++) {
+      const cell = cells[r * size + c];
+      row += `<td class="${cell.isFree ? 'free' : ''}" style="height:${rowH}px;font-size:${fontSize}pt;">${cell.text}</td>`;
+    }
+    row += '</tr>';
+    rows += row;
+  }
+
+  return `
+<div class="page">
+  <div class="card-num-stamp">การ์ด #${card.id}</div>
+  <div class="bingo-card">
+    <div class="card-top">
+      <img src="https://nonthaphathr.github.io/uploadimg/logobingo.png" class="card-logo" onerror="this.style.display='none'">
+      <div class="card-heading">
+        <h2 style="-webkit-text-fill-color:#6C2FC9;color:#6C2FC9;">เกมบิงโกชนิดของคำ</h2>
+        <div class="sub">พัฒนาโดย ครูนนทพัทธ์ หิรัญเรือง</div>
+      </div>
+    </div>
+    <div class="card-meta">
+      <span>📋 ตาราง ${size}×${size}</span>
+      <span>|</span>
+      <span>📚 ${modeLabel}</span>
+      <span>|</span>
+      <span>🎴 การ์ดที่ ${card.id}</span>
+    </div>
+    <table class="bingo-table">
+      ${rows}
+    </table>
+    <div class="card-footer">
+      <strong>วิธีเล่น:</strong> ฟังครูออกคำ → ตรวจสอบคำในการ์ด → ขีดคำที่ได้ยิน → จนครบแนว (แถว/คอลัมน์/แนวทแยง) → ร้อง "บิงโก!"
+    </div>
+  </div>
+</div>`;
+}
+
+// ===== DOWNLOAD PDF =====
+async function downloadPDF() {
+  if (!generatedCards.length) { alert('กรุณาสร้างการ์ดก่อน'); return; }
+
+  const overlay = document.getElementById('pdfOverlay');
+  const msgEl = document.getElementById('pdfOverlayMsg');
+  const fillEl = document.getElementById('pdfProgressFill');
+  const countEl = document.getElementById('pdfPageCount');
+  const pdfBtn = document.getElementById('pdfBtn');
+  const renderArea = document.getElementById('pdfRenderArea');
+
+  overlay.classList.add('show');
+  pdfBtn.disabled = true;
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const A4_W = 210; const A4_H = 297;
+
+    for (let i = 0; i < generatedCards.length; i++) {
+      const card = generatedCards[i];
+      const pct = Math.round(((i) / generatedCards.length) * 100);
+      fillEl.style.width = pct + '%';
+      msgEl.textContent = `กำลังประมวลผลการ์ดที่ ${i + 1} จาก ${generatedCards.length} ใบ`;
+      countEl.textContent = `${pct}%`;
+
+      // Build card HTML for rendering
+      renderArea.innerHTML = buildPrintCardForPDF(card);
+      const cardEl = renderArea.firstElementChild;
+
+      await new Promise(r => setTimeout(r, 80)); // let DOM paint
+
+      const canvas = await html2canvas(cardEl, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        width: 794,
+        windowWidth: 794
+      });
+
+      if (i > 0) pdf.addPage();
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      const canvasW = canvas.width;
+      const canvasH = canvas.height;
+      const ratio = canvasH / canvasW;
+      const pdfW = A4_W;
+      const pdfH = Math.min(A4_H, pdfW * ratio);
+      const offsetY = (A4_H - pdfH) / 2;
+
+      pdf.addImage(imgData, 'JPEG', 0, offsetY, pdfW, pdfH);
+    }
+
+    fillEl.style.width = '100%';
+    countEl.textContent = '100%';
+    msgEl.textContent = 'กำลังบันทึกไฟล์...';
+    await new Promise(r => setTimeout(r, 300));
+
+    const modeLabel = { noun: 'คำนาม', verb: 'คำกริยา', both: 'รวมคำ' }[generatedCards[0].mode];
+    const size = generatedCards[0].size;
+    pdf.save(`บิงโก_${size}x${size}_${modeLabel}_${generatedCards.length}ใบ.pdf`);
+
+  } catch (err) {
+    console.error('PDF Error:', err);
+    alert('เกิดข้อผิดพลาดในการสร้าง PDF\nกรุณาลองใหม่อีกครั้ง');
+  } finally {
+    renderArea.innerHTML = '';
+    overlay.classList.remove('show');
+    pdfBtn.disabled = false;
+  }
+}
+
+function buildPrintCardForPDF(card) {
+  const size = card.size;
+  const hasFree = card.hasFree && size % 2 === 1;
+  const totalCells = size * size;
+  const freeIdx = hasFree ? Math.floor(totalCells / 2) : -1;
+  const modeLabel = { noun: 'คำนาม', verb: 'คำกริยา', both: 'รวมทั้ง 2 ชนิด' }[card.mode];
+  const rowH = { 3: 110, 4: 82, 5: 66, 6: 55 }[size] || 66;
+  const fontSize = { 3: 22, 4: 18, 5: 15, 6: 13 }[size] || 15;
+
+  let cells = [];
+  let wordIdx = 0;
+  for (let i = 0; i < totalCells; i++) {
+    if (i === freeIdx) cells.push({ text: 'FREE', isFree: true });
+    else cells.push({ text: card.words[wordIdx++] || '', isFree: false });
+  }
+
+  let rows = '';
+  for (let r = 0; r < size; r++) {
+    let row = '<tr>';
+    for (let c = 0; c < size; c++) {
+      const cell = cells[r * size + c];
+      const cellStyle = cell.isFree
+        ? `background:linear-gradient(135deg,#9B3FF5,#E91E8C);color:white;font-weight:900;font-size:${fontSize + 2}px;`
+        : `background:linear-gradient(135deg,#f8f0ff,#fff0f8);color:#3a0a6a;font-weight:600;font-size:${fontSize}px;`;
+      row += `<td style="${cellStyle}border:2px solid #C155E8;text-align:center;vertical-align:middle;height:${rowH}px;padding:4px;line-height:1.3;">${cell.text}</td>`;
+    }
+    row += '</tr>';
+    rows += row;
+  }
+
+  return `
+  <div style="width:794px;min-height:1123px;background:white;padding:32px 36px;font-family:'Kanit',sans-serif;display:flex;flex-direction:column;align-items:center;gap:16px;box-sizing:border-box;">
+    <div style="display:flex;align-items:center;gap:14px;justify-content:center;">
+      <img src="https://nonthaphathr.github.io/uploadimg/logobingo.png" style="height:60px;width:auto;" onerror="this.style.display='none'">
+      <div style="text-align:center;">
+        <div style="font-size:26px;font-weight:900;color:#6C2FC9;line-height:1.2;">เกมบิงโกชนิดของคำ</div>
+        <div style="font-size:12px;color:#999;font-weight:400;">พัฒนาโดย ครูนนทพัทธ์ หิรัญเรือง</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:20px;align-items:center;justify-content:center;font-size:12px;color:#6C2FC9;font-weight:600;border-top:1px dashed #e0c4f8;border-bottom:1px dashed #e0c4f8;padding:8px 0;width:100%;">
+      <span>📋 ตาราง ${size}×${size}</span><span>|</span><span>📚 ${modeLabel}</span><span>|</span><span>🎴 การ์ดที่ ${card.id}</span>
+    </div>
+    <table style="border-collapse:collapse;width:100%;flex:1;">
+      ${rows}
+    </table>
+    <div style="font-size:11px;color:#aaa;border-top:1px solid #f0e0ff;padding-top:10px;text-align:center;width:100%;">
+      <strong>วิธีเล่น:</strong> ฟังครูออกคำ → ตรวจสอบคำในการ์ด → ขีดคำที่ได้ยิน → จนครบแนว (แถว/คอลัมน์/แนวทแยง) → ร้อง "บิงโก!"
+    </div>
+  </div>`;
+}
+
+// ===== INIT =====
+resetPool();
+updateStats();
+updateProgress();
+</script>
+</body>
+</html>
